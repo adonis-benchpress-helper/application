@@ -45,9 +45,9 @@ export class App extends React.Component {
     super(props);
 
     this.state = {
-        weight: 0,
-        reps: 0,
-        maxWeight: 0,
+        weight: 100,
+        reps: 8,
+        maxWeight: 124,
         error: ''
     };
 
@@ -186,7 +186,7 @@ export class App extends React.Component {
 
     calculateMaxWeight() {
         const { weight, reps } = this.state;
-        const maxWeight = calculate_max(reps, weight);
+        const maxWeight = Math.ceil(calculate_max(weight, reps));
         this.setState({ maxWeight });
     }
 
@@ -211,7 +211,7 @@ export class App extends React.Component {
     return (
       <div>
         <Card className={AppCss.maincard} style={{ width: '90%' }}>
-              <CardContent>
+            <CardContent>
                 <Col>  
                   <Cell className={AppCss.heading} content={<TextBoxBiggerTitle>Ваши силовые показатели</TextBoxBiggerTitle>}/>
 
@@ -222,6 +222,9 @@ export class App extends React.Component {
                           value={weight}
                           min={0}
                           max={300}
+                          onChange={(value) => {
+                              this.setState({ weight: value });
+                          }}
                           ariaLabelDecrement="Уменьшить значение"
                           ariaLabelIncrement="Увеличить значение"
                         />
@@ -233,26 +236,29 @@ export class App extends React.Component {
                         <Stepper
                           step={1}
                           value={reps}
-                          min={1}
+                          min={2}
                           max={12}
+                          onChange={(value) => {
+                              this.setState({ reps: value });
+                          }}
                           ariaLabelDecrement="Уменьшить значение"
                           ariaLabelIncrement="Увеличить значение"
                         />
                       }
                   />
-                      </Col> 
-                  </CardContent>
+                </Col> 
+            </CardContent>
 
-                  <Button className={AppCss.countbutton} text="Рассчитать 1ПМ" size="s" view="overlay"
-                    onClick={() => {
-                        maxWeight=this.calculateMaxWeight(reps, weight);
-                    }}
-                  />
-                  
-                  <Display2 className={AppCss.resmsg}>Ваш одноповторный максимум составляет</Display2>
-                  <Display3 className={AppCss.resvalue}>{maxWeight}</Display3>
-                  <Display2 className={AppCss.reskg}>килограмм</Display2>
-              </Card>
+            <Button className={AppCss.countbutton} text="Рассчитать 1ПМ" size="s" view="overlay"
+            onClick={() => {
+                maxWeight=this.calculateMaxWeight(reps, weight);
+            }}
+            />
+            
+            <Display2 className={AppCss.resmsg}>Ваш одноповторный максимум составляет</Display2>
+            <Display3 className={AppCss.resvalue}>{maxWeight}</Display3>
+            <Display2 className={AppCss.reskg}>килограмм</Display2>
+         </Card>
         </div>
     );
   }
