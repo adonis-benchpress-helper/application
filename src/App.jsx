@@ -1,5 +1,13 @@
-import React from 'react';
+import React from "react";
+import { 
+  Col, Button, Card, CardContent, Cell, TextBoxBigTitle, 
+  TextBoxBiggerTitle, Stepper, Display2, Display3
+} from "@salutejs/plasma-ui";
+
+import AppCss from './App.module.css';
+
 import { createAssistant, createSmartappDebugger } from '@salutejs/client';
+
 import './App.css';
 
 const initializeAssistant = (getState) => {
@@ -180,63 +188,13 @@ export class App extends React.Component {
         });
     }
 
-    render() {
-        const { weight, reps, maxWeight, error } = this.state;
-        return (
-            <div className="App">
-                <header className="App-header">
-                    <h1>Калькулятор Жима</h1>
-                    <p>Проверь свой максимальный вес!</p>
-                </header>
-                <div className="content">
-                    <div>
-                        <label>Вес: {weight} кг</label>
-                    </div>
-                    <div>
-                        <label>Повторы: {reps}</label>
-                    </div>
-                    <div>
-                        <button onClick={() => this.setState((prevState) => {
-                            const newWeight = prevState.weight + 5;
-                            if (newWeight > 200) {
-                                return { error: 'ага, поверил' };
-                            } else {
-                                return { weight: newWeight, error: '' };
-                            }
-                        })}>Добавить вес</button>
-                        <button onClick={() => this.setState((prevState) => {
-                            const newWeight = prevState.weight - 1;
-                            if (newWeight < 0) {
-                                return { error: 'Вес не может быть отрицательным' };
-                            } else {
-                                return { weight: newWeight, error: '' };
-                            }
-                        })}>Убавить вес</button>
-                        <button onClick={() => this.setState((prevState) => ({ reps: prevState.reps + 1, error: '' }))}>Добавить повтор</button>
-                        <button onClick={() => this.setState((prevState) => {
-                            const newReps = prevState.reps - 1;
-                            if (newReps < 0) {
-                                return { error: 'Повторы не могут быть отрицательными' };
-                            } else {
-                                return { reps: newReps, error: '' };
-                            }
-                        })}>Убавить повтор</button>
-                    </div>
-                    <div>
-                        {error && <p className="error">{error}</p>}
-                    </div>
-                    <div>
-                        <button onClick={() => this.calculateMaxWeight()}>Узнать максимальный вес</button>
-                    </div>
-                    {maxWeight !== null && (
-                        <div>
-                            <p>Максимальный вес: {maxWeight} кг</p>
-                        </div>
-                    )}
-                </div>
-            </div>
-        );
-    }
+const App = () => {
+  let a = 1;
+  return (
+    <div>
+      <h1>Hello world {a}</h1>
+    </div>
+  )
 }
 
 export default App;

@@ -1,0 +1,41 @@
+.maincard {
+    margin: 0 auto;
+    margin-top: 4rem;
+    margin-bottom: 4rem;
+}
+
+.heading {
+    text-align: center;
+}
+
+.countbutton { 
+    margin: 1.5rem;
+    margin-left: 4.4rem;
+    margin-right: 4.4rem;
+    border-radius: 5;
+}
+
+
+.countbutton:hover {
+    -webkit-transform: scale(0);
+    -moz-transform: scale(0);
+    -ms-transform: scale(0);
+    -o-transform: scale(0);
+    transform: scale(0);
+    cursor: pointer;
+}
+
+.calc-max-weight {
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}
+
+.resmsg, .resvalue, .reskg {
+    text-align: center;
+    margin: 2rem;
+}
+
+.resmsg {
+    margin-top: 3rem;
+}
