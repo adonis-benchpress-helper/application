@@ -1,8 +1,8 @@
 theme: /
-    state: SetWeight
-        q!: (установи вес | выставь вес) {number}
-        context: (weight = $number)
+    state: SetReps
+        q!: (установи количество повторений | выставь количество повторений) {number}
+        context: (reps = $number)
         script:
-            log('SetWeight: context: ' + JSON.stringify($context))
-            sendAction('set_weight', {weight: $context.weight})
-        a: Вес установлен на {$context.weight} килограммов.
+            log('SetReps: context: ' + JSON.stringify($context))
+            sendAction('set_reps', {reps: $context.reps})
+        a: Количество повторений установлено на {$context.reps}.
