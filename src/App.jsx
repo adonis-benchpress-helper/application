@@ -119,67 +119,36 @@ export class App extends React.Component {
         }
     }
 
-    add_weight(action) {
-        console.log('add_weight', action);
-        this.setState((prevState) => {
-            const newWeight = prevState.weight + action.weight;
-            if (newWeight > 200) {
-                return { error: 'ага, поверил' };
-            } else {
-                return { weight: newWeight, error: '' };
-            }
-        });
-    }
-
-    add_reps(action) {
-        console.log('add_reps', action);
-        this.setState((prevState) => ({ reps: prevState.reps + action.reps, error: '' }));
-    }
-
-    subtract_weight(action) {
-        console.log('subtract_weight', action);
-        this.setState((prevState) => {
-            const newWeight = prevState.weight - action.weight;
-            if (newWeight < 0) {
-                return { error: 'Вес не может быть отрицательным' };
-            } else {
-                return { weight: newWeight, error: '' };
-            }
-        });
-    }
-
-    subtract_reps(action) {
-        console.log('subtract_reps', action);
-        this.setState((prevState) => {
-            const newReps = prevState.reps - action.reps;
-            if (newReps < 0) {
-                return { error: 'Повторы не могут быть отрицательными' };
-            } else {
-                return { reps: newReps, error: '' };
-            }
-        });
-    }
-
     set_weight(action) {
         console.log('set_weight', action);
-        if (action.weight < 0) {
+        if (action < 0) {
             this.setState({ error: 'Вес не может быть отрицательным' });
-        } else if (action.weight > 300) {
+        } else if (action > 300) {
             this.setState({ error: 'ага, поверил' });
         } else {
-            this.setState({ weight: action.weight, error: '' }, () => {
-                this.assistant.sendData({ action: { action_id: 'tts', parameters: { text: `Вес установлен на ${this.state.weight} килограммов` } } });
+            this.setState({ weight: action, error: '' }, () => {
+                this.assistant.sendData(
+                    { 
+                        action: { 
+                            action_id: 'tts',
+                            parameters: { 
+                                text: `Вес установлен на ${this.state.weight} килограммов` 
+                        } 
+                    } 
+                    });
             });
         }
     }
 
     set_reps(action) {
         console.log('set_reps', action);
-        if (action.reps < 0) {
+        if (action < 0) {
             this.setState({ error: 'Повторы не могут быть отрицательными' });
         } else {
-            this.setState({ reps: action.reps, error: '' }, () => {
-                this.assistant.sendData({ action: { action_id: 'tts', parameters: { text: `Повторы установлены на ${this.state.reps}` } } });
+            this.setState({ reps: action, error: '' }, () => {
+                this.assistant.sendData(
+                    { action: 
+                        { action_id: 'tts', parameters: { text: `Повторы установлены на ${this.state.reps}` } } });
             });
         }
     }
@@ -222,9 +191,7 @@ export class App extends React.Component {
                           value={weight}
                           min={0}
                           max={300}
-                          onChange={(value) => {
-                              this.setState({ weight: value });
-                          }}
+                          onChange={this.set_weight.bind(this)}
                           ariaLabelDecrement="Уменьшить значение"
                           ariaLabelIncrement="Увеличить значение"
                         />
@@ -238,9 +205,7 @@ export class App extends React.Component {
                           value={reps}
                           min={2}
                           max={12}
-                          onChange={(value) => {
-                              this.setState({ reps: value });
-                          }}
+                          onChange={this.set_reps.bind(this)}
                           ariaLabelDecrement="Уменьшить значение"
                           ariaLabelIncrement="Увеличить значение"
                         />
@@ -250,9 +215,9 @@ export class App extends React.Component {
             </CardContent>
 
             <Button className={AppCss.countbutton} text="Рассчитать 1ПМ" size="s" view="overlay"
-            onClick={() => {
-                maxWeight=this.calculateMaxWeight(reps, weight);
-            }}
+                onClick={() => {
+                    maxWeight=this.calculateMaxWeight(reps, weight);
+                }}
             />
             
             <Display2 className={AppCss.resmsg}>Ваш одноповторный максимум составляет</Display2>
