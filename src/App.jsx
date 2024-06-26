@@ -81,7 +81,7 @@ export class App extends React.Component {
     this.assistant.on('tts', (event) => {
         console.log(`assistant.on(tts)`, event);
     });
-}
+    }
 
     getStateForAssistant() {
         const state = {
@@ -95,23 +95,14 @@ export class App extends React.Component {
         console.log('dispatchAssistantAction', action);
         if (action) {
             switch (action.type) {
-                case 'add_weight':
-                    return this.add_weight(action);
-
-                case 'add_reps':
-                    return this.add_reps(action);
-
-                case 'subtract_weight':
-                    return this.subtract_weight(action);
-
-                case 'subtract_reps':
-                    return this.subtract_reps(action);
-
                 case 'set_weight':
                     return this.set_weight(action);
 
                 case 'set_reps':
                     return this.set_reps(action);
+
+                case 'calculate_max':
+                    return this.calculate_max(action);
 
                 default:
                     throw new Error();
@@ -119,41 +110,48 @@ export class App extends React.Component {
         }
     }
 
+
     set_weight(action) {
-        console.log('set_weight', action);
-        if (action < 0) {
+        const weight = action.weight;
+        if (weight < 0) {
             this.setState({ error: 'Вес не может быть отрицательным' });
-        } else if (action > 300) {
+        } else if (weight > 300) {
             this.setState({ error: 'ага, поверил' });
+        } else if (weight % 5 !== 0) {
+            this.setState({ error: 'Вес должен быть кратен 5' });
         } else {
-            this.setState({ weight: action, error: '' }, () => {
-                this.assistant.sendData(
-                    { 
-                        action: { 
-                            action_id: 'tts',
-                            parameters: { 
-                                text: `Вес установлен на ${this.state.weight} килограммов` 
+            this.setState({ weight: weight, error: '' }, () => {
+                this.assistant.sendData({ 
+                    action: { 
+                        action_id: 'tts',
+                        parameters: { 
+                            text: `Вес установлен на ${this.state.weight} килограммов` 
                         } 
                     } 
-                    });
+                });
             });
         }
     }
 
     set_reps(action) {
-        console.log('set_reps', action);
-        if (action < 0) {
-            this.setState({ error: 'Повторы не могут быть отрицательными' });
+        const reps = action.reps
+        if (reps < 0 || reps > 12) {
+            this.setState({ error: 'Повторы могут принимать значения от 0 до 12' });
         } else {
-            this.setState({ reps: action, error: '' }, () => {
-                this.assistant.sendData(
-                    { action: 
-                        { action_id: 'tts', parameters: { text: `Повторы установлены на ${this.state.reps}` } } });
+            this.setState({ reps: reps, error: '' }, () => {
+                this.assistant.sendData({ 
+                    action: {
+                        action_id: 'tts', 
+                        parameters: { 
+                            text: `Повторы установлены на ${this.state.reps}` 
+                        } 
+                    } 
+                });
             });
         }
     }
 
-    calculateMaxWeight() {
+    calculate_max() {
         const { weight, reps } = this.state;
         const maxWeight = Math.ceil(calculate_max(weight, reps));
         this.setState({ maxWeight });
@@ -182,7 +180,9 @@ export class App extends React.Component {
         <Card className={AppCss.maincard} style={{ width: '90%' }}>
             <CardContent>
                 <Col>  
-                  <Cell className={AppCss.heading} content={<TextBoxBiggerTitle>Ваши силовые показатели</TextBoxBiggerTitle>}/>
+                  <Cell className={AppCss.heading} 
+                        content={<TextBoxBiggerTitle>Ваши силовые показатели</TextBoxBiggerTitle>}
+                  />
 
                   <Cell content={<TextBoxBigTitle>Вес штанги</TextBoxBigTitle>} 
                       contentRight={
@@ -191,7 +191,7 @@ export class App extends React.Component {
                           value={weight}
                           min={0}
                           max={300}
-                          onChange={this.set_weight.bind(this)}
+                          onChange={(value) => this.set_weight({ weight: value })}
                           ariaLabelDecrement="Уменьшить значение"
                           ariaLabelIncrement="Увеличить значение"
                         />
@@ -205,7 +205,7 @@ export class App extends React.Component {
                           value={reps}
                           min={2}
                           max={12}
-                          onChange={this.set_reps.bind(this)}
+                          onChange={(value) => this.set_reps({ reps: value })}
                           ariaLabelDecrement="Уменьшить значение"
                           ariaLabelIncrement="Увеличить значение"
                         />
@@ -215,9 +215,7 @@ export class App extends React.Component {
             </CardContent>
 
             <Button className={AppCss.countbutton} text="Рассчитать 1ПМ" size="s" view="overlay"
-                onClick={() => {
-                    maxWeight=this.calculateMaxWeight(reps, weight);
-                }}
+                onClick={this.calculate_max.bind(this)}
             />
             
             <Display2 className={AppCss.resmsg}>Ваш одноповторный максимум составляет</Display2>

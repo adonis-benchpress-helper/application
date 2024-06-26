@@ -17,11 +17,7 @@
 
 
 .countbutton:hover {
-    -webkit-transform: scale(0);
-    -moz-transform: scale(0);
-    -ms-transform: scale(0);
-    -o-transform: scale(0);
-    transform: scale(0);
+    transform: scale(1);
     cursor: pointer;
 }
 
