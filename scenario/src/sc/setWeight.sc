@@ -1,8 +1,9 @@
 theme: /
     state: SetWeight
-        q!: (установи вес | выставь вес) {number}
-        context: (weight = $number)
+        q!: (установи вес | выставь вес | мой вес | мой вес на штанге) $number::weight (килограмм | кг | киллограммов)
         script:
             log('SetWeight: context: ' + JSON.stringify($context))
-            sendAction('set_weight', {weight: $context.weight})
-        a: Вес установлен на {$context.weight} килограммов.
+            $context.weight = $parseTree.weight; 
+            setWeight($context.weight, $context); 
+        a: Вес установлен! 
+

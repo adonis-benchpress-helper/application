@@ -1,8 +1,9 @@
 theme: /
     state: SetReps
-        q!: (установи количество повторений | выставь количество повторений) {number}
-        context: (reps = $number)
+        q!: (установи количество повторений | выставь количество повторений | мое количество повторений) $number::reps
         script:
-            log('SetReps: context: ' + JSON.stringify($context))
-            sendAction('set_reps', {reps: $context.reps})
-        a: Количество повторений установлено на {$context.reps}.
+            log('SetWeight: context: ' + JSON.stringify($context))
+            $context.reps = $parseTree.reps; 
+            setReps($context.reps, $context); 
+        a: Повторения установлены!
+
