@@ -1,6 +1,6 @@
 theme: /
     state: DownWeight
-        q!: (Уменьши) (вес)
+        q!: (Уменьши | понизь | снизь | уменьшь) (вес | килограммы )
         script:
             log('DownWeight: context: ' + JSON.stringify($context))
             decreaseWeight($context);
