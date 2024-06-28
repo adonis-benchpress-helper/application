@@ -107,8 +107,8 @@ export class App extends React.Component {
                 case 'increase_reps':
                     return this.increase_reps(action);
 
-                case 'calculate_max':
-                    return this.calculate_max(action);
+                case 'calc_max':
+                    return this.calc_max(action);
 
                 default:
                     throw new Error();
@@ -131,6 +131,12 @@ export class App extends React.Component {
 
     decrease_reps(action) {
         document.querySelector('[aria-label="Уменьшить повторения"]').click();
+    }
+
+    calc_max(action) {
+        document.getElementsByClassName(
+            'plasma__sc-14cj1yw-0 plasma-ui__sc-vm1boz-0 jhrZDR App_countbutton__ksZ50 sn-section-item'
+        )[0].click()
     }
     
 
