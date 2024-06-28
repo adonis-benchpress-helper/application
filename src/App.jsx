@@ -14,7 +14,7 @@ const brzycki = (M, k) => M * (36 / (37 - k));
 const lander = (M, k) => (100 * M) / (101.3 - 2.67123 * k);
 const oConner = (M, k) => M * (1 + 0.025 * k);
 
-const calculate_max = (M, k) => {
+const calculate_maximum = (M, k) => {
     const epley1RM = epley(M, k);
     const brzycki1RM = brzycki(M, k);
     const lander1RM = lander(M, k);
@@ -22,7 +22,7 @@ const calculate_max = (M, k) => {
 
     const average1RM = (epley1RM + brzycki1RM + lander1RM + oConner1RM) / 4;
 
-    return average1RM;
+    return Math.ceil(average1RM);
 };
 
 const initializeAssistant = (getState) => {
@@ -123,7 +123,7 @@ export class App extends React.Component {
             this.setState({ weight: weight, error: '' }, () => {
                 this.assistant.sendData({ 
                     action: { 
-                        action_id: 'tts',
+                        action_id: 'sw',
                         parameters: { 
                             text: `Вес установлен на ${this.state.weight} килограммов` 
                         } 
@@ -141,7 +141,7 @@ export class App extends React.Component {
             this.setState({ reps: reps, error: '' }, () => {
                 this.assistant.sendData({ 
                     action: {
-                        action_id: 'tts', 
+                        action_id: 'sr', 
                         parameters: { 
                             text: `Повторы установлены на ${this.state.reps}` 
                         } 
@@ -151,10 +151,19 @@ export class App extends React.Component {
         }
     }
 
-    calculate_max() {
-        const { weight, reps } = this.state;
-        const maxWeight = Math.ceil(calculate_max(weight, reps));
-        this.setState({ maxWeight });
+    calculate_max(action) {
+        const { weight, reps } = action;
+        const maxWeight = Math.ceil(calculate_maximum(weight, reps));
+        this.setState({ maxWeight }, () => {
+            this.assistant.sendData({ 
+                action: {
+                    action_id: 'cm', 
+                    parameters: { 
+                        text: `Ваш одноповторный максимум составляет ${this.state.maxWeight} килограммов` 
+                    } 
+                }
+            });
+        });
     }
 
     _send_action_value(action_id, value) {
@@ -215,7 +224,10 @@ export class App extends React.Component {
             </CardContent>
 
             <Button className={AppCss.countbutton} text="Рассчитать 1ПМ" size="s" view="overlay"
-                onClick={this.calculate_max.bind(this)}
+                onClick={() => {
+                    let mx = calculate_maximum(weight, reps);
+                    this.setState({ maxWeight: mx });
+                }}
             />
             
             <Display2 className={AppCss.resmsg}>Ваш одноповторный максимум составляет</Display2>
