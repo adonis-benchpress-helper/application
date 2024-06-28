@@ -8,7 +8,6 @@ import AppCss from './App.module.css';
 
 import { createAssistant, createSmartappDebugger } from '@salutejs/client';
 
-
 const epley = (M, k) => (M * k) / 30 + M;
 const brzycki = (M, k) => M * (36 / (37 - k));
 const lander = (M, k) => (100 * M) / (101.3 - 2.67123 * k);
@@ -25,62 +24,61 @@ const calculate_maximum = (M, k) => {
     return Math.ceil(average1RM);
 };
 
+
 const initializeAssistant = (getState) => {
-  if (process.env.NODE_ENV === 'development') {
-      console.log(`process.env.REACT_APP_TOKEN: ${process.env.REACT_APP_TOKEN}`);
-      return createSmartappDebugger({
-          token: process.env.REACT_APP_TOKEN ?? '',
-          initPhrase: `Запусти ${process.env.REACT_APP_SMARTAPP}`,
-          getState,
-      });
-  } else {
-      return createAssistant({ getState });
-  }
+    if (process.env.NODE_ENV === 'development') {
+        return createSmartappDebugger({
+            token: process.env.REACT_APP_TOKEN ?? '',
+            initPhrase: `Запусти ${process.env.REACT_APP_SMARTAPP}`,
+            getState,
+        });
+    } else {
+        return createAssistant({ getState });
+    }
 };
 
-
 export class App extends React.Component {
+    constructor(props) {
+        super(props);
 
-  constructor(props) {
-    super(props);
+        this.state = {
+            weight: 0,
+            reps: 0,
+            maxWeight: null,
+            error: ''
+        };
 
-    this.state = {
-        weight: 100,
-        reps: 8,
-        maxWeight: 124,
-        error: ''
-    };
+        this.assistant = initializeAssistant(() => this.getStateForAssistant());
 
-    this.assistant = initializeAssistant(() => this.getStateForAssistant());
+        this.assistant.on('data', (event) => {
+            console.log(`assistant.on(data)`, event);
+            if (event.type === 'character') {
+                console.log(`assistant.on(data): character: "${event?.character?.id}"`);
+            } else if (event.type === 'insets') {
+                console.log(`assistant.on(data): insets`);
+            } else {
+                const { action } = event;
+                this.dispatchAssistantAction(action);
+            }
+        });
 
-    this.assistant.on('data', (event) => {
-        console.log(`assistant.on(data)`, event);
-        if (event.type === 'character') {
-            console.log(`assistant.on(data): character: "${event?.character?.id}"`);
-        } else if (event.type === 'insets') {
-            console.log(`assistant.on(data): insets`);
-        } else {
-            const { action } = event;
-            this.dispatchAssistantAction(action);
-        }
-    });
+        this.assistant.on('start', (event) => {
+            let initialData = this.assistant.getInitialData();
+            console.log(`assistant.on(start)`, event, initialData);
+        });
 
-    this.assistant.on('start', (event) => {
-        let initialData = this.assistant.getInitialData();
-        console.log(`assistant.on(start)`, event, initialData);
-    });
+        this.assistant.on('command', (event) => {
+            console.log(`assistant.on(command)`, event);
+        });
 
-    this.assistant.on('command', (event) => {
-        console.log(`assistant.on(command)`, event);
-    });
-
-    this.assistant.on('error', (event) => {
-        console.log(`assistant.on(error)`, event);
-    });
+        this.assistant.on('error', (event) => {
+            console.log(`assistant.on(error)`, event);
+        });
 
     this.assistant.on('tts', (event) => {
         console.log(`assistant.on(tts)`, event);
     });
+
     }
 
     getStateForAssistant() {
@@ -137,8 +135,7 @@ export class App extends React.Component {
         document.getElementsByClassName(
             'plasma__sc-14cj1yw-0 plasma-ui__sc-vm1boz-0 jhrZDR App_countbutton__ksZ50 sn-section-item'
         )[0].click()
-    }
-    
+    }    
 
     calculate_max(action) {
         const { weight, reps } = action;
