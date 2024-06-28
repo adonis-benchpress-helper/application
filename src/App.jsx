@@ -212,11 +212,11 @@ export class App extends React.Component {
                 </Col> 
             </CardContent>
 
-            <Button className={AppCss.countbutton} text="Рассчитать 1ПМ" size="s" view="overlay"
+            <Button className={AppCss.countbutton} text="Рассчитать" size="s" view="overlay"
                 onClick={() => {this.setState({ maxWeight: calculate_maximum(weight, reps) })}}
             />
             
-            <Display2 className={AppCss.resmsg}>Ваш одноповторный максимум составляет</Display2>
+            <Display2 className={AppCss.resmsg}>Максимум составляет</Display2>
             <Display3 className={AppCss.resvalue}>{maxWeight}</Display3>
             <Display2 className={AppCss.reskg}>килограмм</Display2>
          </Card>
