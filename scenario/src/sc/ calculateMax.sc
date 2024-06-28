@@ -9,5 +9,7 @@ theme: /
 
         script:
             log('CalculateMax: context: ' + JSON.stringify($context))
-            calculateMax($context.weight, $context.reps, $context)
+            calcMax($context)
+
+
 

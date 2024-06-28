@@ -14,7 +14,7 @@ const brzycki = (M, k) => M * (36 / (37 - k));
 const lander = (M, k) => (100 * M) / (101.3 - 2.67123 * k);
 const oConner = (M, k) => M * (1 + 0.025 * k);
 
-const calculate_max = (M, k) => {
+const calculate_maximum = (M, k) => {
     const epley1RM = epley(M, k);
     const brzycki1RM = brzycki(M, k);
     const lander1RM = lander(M, k);
@@ -22,7 +22,7 @@ const calculate_max = (M, k) => {
 
     const average1RM = (epley1RM + brzycki1RM + lander1RM + oConner1RM) / 4;
 
-    return average1RM;
+    return Math.ceil(average1RM);
 };
 
 const initializeAssistant = (getState) => {
@@ -95,14 +95,20 @@ export class App extends React.Component {
         console.log('dispatchAssistantAction', action);
         if (action) {
             switch (action.type) {
-                case 'set_weight':
-                    return this.set_weight(action);
+                case 'increase_weight':
+                    return this.increase_weight(action);
 
-                case 'set_reps':
-                    return this.set_reps(action);
+                case 'decrease_weight':
+                    return this.decrease_weight(action);
 
-                case 'calculate_max':
-                    return this.calculate_max(action);
+                case 'decrease_reps':
+                    return this.decrease_reps(action);
+
+                case 'increase_reps':
+                    return this.increase_reps(action);
+
+                case 'calc_max':
+                    return this.calc_max(action);
 
                 default:
                     throw new Error();
@@ -110,51 +116,43 @@ export class App extends React.Component {
         }
     }
 
+    increase_weight(action) {
+        document.querySelector('[aria-label="Увеличить вес"]').click();
 
-    set_weight(action) {
-        const weight = action.weight;
-        if (weight < 0) {
-            this.setState({ error: 'Вес не может быть отрицательным' });
-        } else if (weight > 300) {
-            this.setState({ error: 'ага, поверил' });
-        } else if (weight % 5 !== 0) {
-            this.setState({ error: 'Вес должен быть кратен 5' });
-        } else {
-            this.setState({ weight: weight, error: '' }, () => {
-                this.assistant.sendData({ 
-                    action: { 
-                        action_id: 'tts',
-                        parameters: { 
-                            text: `Вес установлен на ${this.state.weight} килограммов` 
-                        } 
-                    } 
-                });
-            });
-        }
     }
 
-    set_reps(action) {
-        const reps = action.reps
-        if (reps < 0 || reps > 12) {
-            this.setState({ error: 'Повторы могут принимать значения от 0 до 12' });
-        } else {
-            this.setState({ reps: reps, error: '' }, () => {
-                this.assistant.sendData({ 
-                    action: {
-                        action_id: 'tts', 
-                        parameters: { 
-                            text: `Повторы установлены на ${this.state.reps}` 
-                        } 
-                    } 
-                });
-            });
-        }
+    decrease_weight(action) {
+        document.querySelector('[aria-label="Уменьшить вес"]').click();
+    }
+    
+    increase_reps(action) {
+        document.querySelector('[aria-label="Увеличить повторения"]').click();
     }
 
-    calculate_max() {
-        const { weight, reps } = this.state;
-        const maxWeight = Math.ceil(calculate_max(weight, reps));
-        this.setState({ maxWeight });
+    decrease_reps(action) {
+        document.querySelector('[aria-label="Уменьшить повторения"]').click();
+    }
+
+    calc_max(action) {
+        document.getElementsByClassName(
+            'plasma__sc-14cj1yw-0 plasma-ui__sc-vm1boz-0 jhrZDR App_countbutton__ksZ50 sn-section-item'
+        )[0].click()
+    }
+    
+
+    calculate_max(action) {
+        const { weight, reps } = action;
+        const maxWeight = Math.ceil(calculate_maximum(weight, reps));
+        this.setState({ maxWeight }, () => {
+            this.assistant.sendData({ 
+                action: {
+                    action_id: 'cm', 
+                    parameters: { 
+                        text: `Ваш одноповторный максимум составляет ${this.state.maxWeight} килограммов` 
+                    } 
+                }
+            });
+        });
     }
 
     _send_action_value(action_id, value) {
@@ -191,9 +189,9 @@ export class App extends React.Component {
                           value={weight}
                           min={0}
                           max={300}
-                          onChange={(value) => this.set_weight({ weight: value })}
-                          ariaLabelDecrement="Уменьшить значение"
-                          ariaLabelIncrement="Увеличить значение"
+                          onChange={(value) => this.setState({ weight: value })}
+                          ariaLabelDecrement="Уменьшить вес"
+                          ariaLabelIncrement="Увеличить вес"
                         />
                     }
                   />
@@ -205,9 +203,9 @@ export class App extends React.Component {
                           value={reps}
                           min={2}
                           max={12}
-                          onChange={(value) => this.set_reps({ reps: value })}
-                          ariaLabelDecrement="Уменьшить значение"
-                          ariaLabelIncrement="Увеличить значение"
+                          onChange={(value) => this.setState({ reps: value })}
+                          ariaLabelDecrement="Уменьшить повторения"
+                          ariaLabelIncrement="Увеличить повторения"
                         />
                       }
                   />
@@ -215,7 +213,7 @@ export class App extends React.Component {
             </CardContent>
 
             <Button className={AppCss.countbutton} text="Рассчитать 1ПМ" size="s" view="overlay"
-                onClick={this.calculate_max.bind(this)}
+                onClick={() => {this.setState({ maxWeight: calculate_maximum(weight, reps) })}}
             />
             
             <Display2 className={AppCss.resmsg}>Ваш одноповторный максимум составляет</Display2>
@@ -226,5 +224,3 @@ export class App extends React.Component {
     );
   }
 }
-
-

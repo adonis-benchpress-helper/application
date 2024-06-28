@@ -1,21 +1,29 @@
-function setWeight(weight, context) {
+function increaseWeight(context) {
     addAction({
-        type: "set_weight",
-        weight: weight,
-    }, context);
+        type:"increase_weight"
+    }, context)
 }
 
-function setReps(reps, context) {
+function decreaseWeight(context) {
     addAction({
-        type: "set_reps",
-        reps: reps,
-    }, context);
+        type:"decrease_weight"
+    }, context)
 }
 
-function calculateMax(weight, reps, context) {
+function increaseReps(context) {
     addAction({
-        type: "calculate_max",
-        weight: weight,
-        reps: reps
-    }, context);
+        type:"increase_reps"
+    }, context)
+}
+
+function decreaseReps(context) {
+    addAction({
+        type:"decrease_reps"
+    }, context)
+}
+
+function calcMax(context) {
+    addAction({
+        type:"calc_max"
+    }, context)
 }
