@@ -95,11 +95,17 @@ export class App extends React.Component {
         console.log('dispatchAssistantAction', action);
         if (action) {
             switch (action.type) {
-                case 'set_weight':
-                    return this.set_weight(action);
+                case 'increase_weight':
+                    return this.increase_weight(action);
 
-                case 'set_reps':
-                    return this.set_reps(action);
+                case 'decrease_weight':
+                    return this.decrease_weight(action);
+
+                case 'decrease_reps':
+                    return this.decrease_reps(action);
+
+                case 'increase_reps':
+                    return this.increase_reps(action);
 
                 case 'calculate_max':
                     return this.calculate_max(action);
@@ -110,46 +116,23 @@ export class App extends React.Component {
         }
     }
 
+    increase_weight(action) {
+        document.querySelector('[aria-label="Увеличить вес"]').click();
 
-    set_weight(action) {
-        const weight = action.weight;
-        if (weight < 0) {
-            this.setState({ error: 'Вес не может быть отрицательным' });
-        } else if (weight > 300) {
-            this.setState({ error: 'ага, поверил' });
-        } else if (weight % 5 !== 0) {
-            this.setState({ error: 'Вес должен быть кратен 5' });
-        } else {
-            this.setState({ weight: weight, error: '' }, () => {
-                this.assistant.sendData({ 
-                    action: { 
-                        action_id: 'sw',
-                        parameters: { 
-                            text: `Вес установлен на ${this.state.weight} килограммов` 
-                        } 
-                    } 
-                });
-            });
-        }
     }
 
-    set_reps(action) {
-        const reps = action.reps
-        if (reps < 0 || reps > 12) {
-            this.setState({ error: 'Повторы могут принимать значения от 0 до 12' });
-        } else {
-            this.setState({ reps: reps, error: '' }, () => {
-                this.assistant.sendData({ 
-                    action: {
-                        action_id: 'sr', 
-                        parameters: { 
-                            text: `Повторы установлены на ${this.state.reps}` 
-                        } 
-                    } 
-                });
-            });
-        }
+    decrease_weight(action) {
+        document.querySelector('[aria-label="Уменьшить вес"]').click();
     }
+    
+    increase_reps(action) {
+        document.querySelector('[aria-label="Увеличить повторения"]').click();
+    }
+
+    decrease_reps(action) {
+        document.querySelector('[aria-label="Уменьшить повторения"]').click();
+    }
+    
 
     calculate_max(action) {
         const { weight, reps } = action;
@@ -200,9 +183,9 @@ export class App extends React.Component {
                           value={weight}
                           min={0}
                           max={300}
-                          onChange={(value) => this.set_weight({ weight: value })}
-                          ariaLabelDecrement="Уменьшить значение"
-                          ariaLabelIncrement="Увеличить значение"
+                          onChange={(value) => this.setState({ weight: value })}
+                          ariaLabelDecrement="Уменьшить вес"
+                          ariaLabelIncrement="Увеличить вес"
                         />
                     }
                   />
@@ -214,9 +197,9 @@ export class App extends React.Component {
                           value={reps}
                           min={2}
                           max={12}
-                          onChange={(value) => this.set_reps({ reps: value })}
-                          ariaLabelDecrement="Уменьшить значение"
-                          ariaLabelIncrement="Увеличить значение"
+                          onChange={(value) => this.setState({ reps: value })}
+                          ariaLabelDecrement="Уменьшить повторения"
+                          ariaLabelIncrement="Увеличить повторения"
                         />
                       }
                   />
@@ -224,10 +207,7 @@ export class App extends React.Component {
             </CardContent>
 
             <Button className={AppCss.countbutton} text="Рассчитать 1ПМ" size="s" view="overlay"
-                onClick={() => {
-                    let mx = calculate_maximum(weight, reps);
-                    this.setState({ maxWeight: mx });
-                }}
+                onClick={() => {this.setState({ maxWeight: calculate_maximum(weight, reps) })}}
             />
             
             <Display2 className={AppCss.resmsg}>Ваш одноповторный максимум составляет</Display2>
